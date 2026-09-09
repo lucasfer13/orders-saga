@@ -1,0 +1,68 @@
+## .NET
+bin/
+obj/
+out/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio / Rider / VS Code
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+## Test / coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+TestResults/
+
+## Rider
+*.sln.iml
+
+## Secrets y configuración local (nunca se commitea)
+*.env
+*.env.*
+appsettings.*.local.json
+secrets.json
+**/Properties/launchSettings.json
+
+## Docker
+docker-compose.override.yml
+
+## Artefactos de la demo (los ficheros finales van versionados aparte,
+## no los intermedios de grabación)
+docs/media/*.tmp
+docs/media/*.cast.raw
+
+## Node (para tooling auxiliar, p. ej. Buf, Renovate local, etc.)
+node_modules/
+
+## OS
+.DS_Store
+Thumbs.db
