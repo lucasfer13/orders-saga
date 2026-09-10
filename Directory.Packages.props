@@ -1,0 +1,47 @@
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <!--
+    Este fichero es la única fuente de versiones del repo. Cada .csproj hace
+    <PackageReference Include="..." /> sin Version: la versión vive aquí.
+    Rellenar por repo según su stack (ver PLAN.md, sección del proyecto).
+    Ejemplo de forma, no versiones reales:
+
+    <ItemGroup>
+      <PackageVersion Include="MassTransit" Version="X.Y.Z" />
+      <PackageVersion Include="MassTransit.RabbitMQ" Version="X.Y.Z" />
+    </ItemGroup>
+  -->
+
+  <!--
+    Librerías de test comunes a los repos backend (ver ESTANDAR-CALIDAD.md
+    sección 7). Sin versión fijada aquí a propósito: el agente architect o
+    quien monte el repo debe comprobar la última versión compatible con
+    .NET 10 en el momento de crear el proyecto, no asumirla. Descomentar y
+    rellenar Version="X.Y.Z" real, verificada, al iniciar cada repo:
+
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="" />
+    <PackageVersion Include="Shouldly" Version="" />
+    <PackageVersion Include="Bogus" Version="" />
+    <PackageVersion Include="Verify.Xunit" Version="" />
+    <PackageVersion Include="Respawn" Version="" />
+    <PackageVersion Include="NetArchTest.Rules" Version="" />
+    <PackageVersion Include="Testcontainers" Version="" />
+  -->
+
+  <!--
+    xunit + Microsoft.Testing.Platform: versiones que trae la plantilla del
+    SDK de .NET 10 al crear un proyecto de test (dotnet new xunit).
+  -->
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+</Project>

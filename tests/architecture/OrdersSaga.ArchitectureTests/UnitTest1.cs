@@ -1,4 +1,4 @@
-﻿namespace OrdersSaga.ArchitectureTests;
+namespace OrdersSaga.ArchitectureTests;
 
 public class UnitTest1
 {

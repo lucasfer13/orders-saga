@@ -1,4 +1,4 @@
-﻿namespace OrdersSaga.UnitTests;
+namespace OrdersSaga.UnitTests;
 
 public class UnitTest1
 {

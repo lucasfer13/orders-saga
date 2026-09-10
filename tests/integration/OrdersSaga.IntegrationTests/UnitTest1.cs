@@ -1,4 +1,4 @@
-﻿namespace OrdersSaga.IntegrationTests;
+namespace OrdersSaga.IntegrationTests;
 
 public class UnitTest1
 {
