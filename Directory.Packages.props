@@ -8,40 +8,70 @@
   <!--
     Este fichero es la única fuente de versiones del repo. Cada .csproj hace
     <PackageReference Include="..." /> sin Version: la versión vive aquí.
-    Rellenar por repo según su stack (ver PLAN.md, sección del proyecto).
-    Ejemplo de forma, no versiones reales:
 
-    <ItemGroup>
-      <PackageVersion Include="MassTransit" Version="X.Y.Z" />
-      <PackageVersion Include="MassTransit.RabbitMQ" Version="X.Y.Z" />
-    </ItemGroup>
+    Todas las versiones de abajo se verificaron contra nuget.org el
+    2026-09-10 (T03), no se asumieron. Detalle y motivos en README.md.
   -->
 
   <!--
-    Librerías de test comunes a los repos backend (ver ESTANDAR-CALIDAD.md
-    sección 7). Sin versión fijada aquí a propósito: el agente architect o
-    quien monte el repo debe comprobar la última versión compatible con
-    .NET 10 en el momento de crear el proyecto, no asumirla. Descomentar y
-    rellenar Version="X.Y.Z" real, verificada, al iniciar cada repo:
-
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="" />
-    <PackageVersion Include="Shouldly" Version="" />
-    <PackageVersion Include="Bogus" Version="" />
-    <PackageVersion Include="Verify.Xunit" Version="" />
-    <PackageVersion Include="Respawn" Version="" />
-    <PackageVersion Include="NetArchTest.Rules" Version="" />
-    <PackageVersion Include="Testcontainers" Version="" />
+    MassTransit: fijado en la línea 8.5.8, NO en la 9.x. MassTransit pasó a
+    licencia comercial de pago a partir de v9 (ver massient.com/license); la
+    8.5.8 es la última release Apache-2.0, con soporte de seguridad anunciado
+    hasta finales de 2026. Revisar este pin antes de esa fecha.
   -->
+  <ItemGroup>
+    <PackageVersion Include="MassTransit" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.8" />
+  </ItemGroup>
+
+  <!-- EF Core 10 + proveedor de PostgreSQL -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+  </ItemGroup>
+
+  <!-- Testcontainers -->
+  <ItemGroup>
+    <PackageVersion Include="Testcontainers" Version="4.15.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.15.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.15.0" />
+  </ItemGroup>
+
+  <!-- OpenTelemetry -->
+  <ItemGroup>
+    <PackageVersion Include="OpenTelemetry" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
+  </ItemGroup>
 
   <!--
-    xunit + Microsoft.Testing.Platform: versiones que trae la plantilla del
-    SDK de .NET 10 al crear un proyecto de test (dotnet new xunit).
+    Librerías de test (ver ESTANDAR-CALIDAD.md sección 7). Verify.Xunit y
+    NetArchTest.Rules NO se usan a propósito: el primero está deprecado por
+    el propio mantenedor (sustituido por Verify.XunitV3), el segundo lleva
+    sin release desde 2021. Se sustituyen por sus equivalentes activos, lo
+    que exige xUnit v3 en vez de v2 (ver ItemGroup de xunit.v3 más abajo).
+  -->
+  <ItemGroup>
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="Respawn" Version="7.0.0" />
+    <PackageVersion Include="Verify.XunitV3" Version="32.0.0" />
+    <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.4" />
+    <PackageVersion Include="TngTech.ArchUnitNET.xUnitV3" Version="0.13.4" />
+  </ItemGroup>
+
+  <!--
+    xUnit v3 + Microsoft.Testing.Platform. Reemplaza a xunit 2.9.3 /
+    xunit.runner.visualstudio (plantilla por defecto del SDK), migrado en T03
+    para poder usar Verify.XunitV3 y TngTech.ArchUnitNET.xUnitV3 desde ya.
   -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageVersion Include="xunit.v3" Version="4.0.0" />
   </ItemGroup>
 
 </Project>
