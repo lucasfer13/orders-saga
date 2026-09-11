@@ -1,0 +1,44 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Madrid",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Actualizaciones menores y de parche de NuGet: agrupadas en un solo PR semanal, riesgo bajo de romper algo.",
+      "matchManagers": ["nuget"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "nuget minor/patch",
+      "automerge": false
+    },
+    {
+      "description": "Actualizaciones mayores de NuGet: PR separado por paquete, nunca agrupadas. Pueden traer cambios de comportamiento (ver ESTANDAR-CALIDAD.md, aviso sobre licencias y breaking changes).",
+      "matchManagers": ["nuget"],
+      "matchUpdateTypes": ["major"],
+      "groupName": null,
+      "labels": ["dependencies", "major-update"]
+    },
+    {
+      "description": "GitHub Actions: agrupadas, riesgo bajo y volumen alto de ruido si van una a una.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Docker base images: PR separado, pueden afectar a la superficie de ataque escaneada por Trivy/docker scout.",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": null,
+      "labels": ["dependencies", "docker"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": false
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  }
+}
