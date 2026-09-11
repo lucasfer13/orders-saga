@@ -19,8 +19,12 @@ services:
       # /var/lib/postgresql (no en .../data) — la imagen crea el
       # subdirectorio versionado ella misma. Ver
       # https://github.com/docker-library/postgres/pull/1259
+      #
+      # Sin script de init: cada servicio crea y migra su propia base de
+      # datos al arrancar, vía EF Core Database.Migrate() (ver
+      # ESTANDAR-CALIDAD.md, healthcheck /health/startup). Postgres arranca
+      # aquí solo con la base de mantenimiento.
       - postgres_data:/var/lib/postgresql
-      - ./docker/postgres/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U orders_saga"]
       interval: 5s

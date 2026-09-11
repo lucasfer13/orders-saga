@@ -30,7 +30,7 @@ docker compose up -d
 dotnet build OrdersSaga.slnx
 ```
 
-`docker compose up -d` deja Postgres (una base de datos por servicio: `orders`, `inventory`, `payments`, `shipping`) y RabbitMQ (con UI de administración) arriba, con healthcheck, sin ningún paso manual. Los 4 servicios .NET se añaden al compose más adelante, cuando tengan Dockerfile.
+`docker compose up -d` deja Postgres y RabbitMQ (con UI de administración) arriba, con healthcheck, sin ningún paso manual. Postgres arranca vacío a propósito: cada servicio crea y migra su propia base de datos (`orders`, `inventory`, `payments`, `shipping`) al arrancar, vía `Database.Migrate()` de EF Core — ver el healthcheck `/health/startup` en `ESTANDAR-CALIDAD.md`. No hay script de init de bases de datos; la única fuente de verdad es el código de migraciones de cada servicio (T11). Los 4 servicios .NET se añaden al compose más adelante, cuando tengan Dockerfile.
 
 | Servicio | Puerto | Credenciales (solo dev local) |
 |---|---|---|
