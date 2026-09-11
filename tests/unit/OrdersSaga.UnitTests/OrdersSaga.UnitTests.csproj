@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- CA1707: los nombres de test con guion bajo (Given_When_Then) son la convencion de xUnit -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
