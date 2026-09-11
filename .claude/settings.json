@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "cd \"$(git rev-parse --show-toplevel)\" && dotnet format OrdersSaga.slnx --verify-no-changes && dotnet test --solution OrdersSaga.slnx && while IFS= read -r proj; do if dotnet list \"$proj\" package --vulnerable --include-transitive --format json | grep -q '\"vulnerabilities\"'; then echo \"Paquete vulnerable encontrado en $proj\" >&2; exit 2; fi; done < <(find src tests -name '*.csproj') || exit 2",
+            "timeout": 300,
+            "statusMessage": "Pre-commit: dotnet format, dotnet test y escaneo de vulnerabilidades..."
+          }
+        ]
+      }
+    ]
+  }
+}
