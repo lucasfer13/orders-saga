@@ -25,9 +25,20 @@ docs/
 
 ## Cómo levantarlo
 
-Pendiente de `docker-compose.yml` (ver `docs/BACKLOG.md`, tarea T04).
+```
+docker compose up -d
+dotnet build OrdersSaga.slnx
+```
 
-Mientras tanto, para compilar y correr los tests (proyectos de test en xUnit v3 + Microsoft.Testing.Platform, `dotnet test` va en modo MTP vía `global.json`):
+`docker compose up -d` deja Postgres (una base de datos por servicio: `orders`, `inventory`, `payments`, `shipping`) y RabbitMQ (con UI de administración) arriba, con healthcheck, sin ningún paso manual. Los 4 servicios .NET se añaden al compose más adelante, cuando tengan Dockerfile.
+
+| Servicio | Puerto | Credenciales (solo dev local) |
+|---|---|---|
+| Postgres | `localhost:5432` | `orders_saga` / `orders_saga_dev_only` |
+| RabbitMQ (AMQP) | `localhost:5672` | `orders_saga` / `orders_saga_dev_only` |
+| RabbitMQ (UI) | http://localhost:15672 | `orders_saga` / `orders_saga_dev_only` |
+
+Para compilar y correr los tests (proyectos de test en xUnit v3 + Microsoft.Testing.Platform, `dotnet test` va en modo MTP vía `global.json`):
 
 ```
 dotnet build OrdersSaga.slnx

@@ -1,0 +1,49 @@
+# Infraestructura local: Postgres (una base de datos por servicio) y
+# RabbitMQ con la UI de administración. Los 4 servicios .NET se añaden aquí
+# más adelante, cuando tengan Dockerfile (ver docs/BACKLOG.md).
+#
+# Credenciales de desarrollo local únicamente, nunca válidas fuera de esta
+# máquina — no son secretos que proteger.
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: orders-saga-postgres
+    environment:
+      POSTGRES_USER: orders_saga
+      POSTGRES_PASSWORD: orders_saga_dev_only
+    ports:
+      - "5432:5432"
+    volumes:
+      # Desde la imagen postgres:18, el volumen de datos se monta en
+      # /var/lib/postgresql (no en .../data) — la imagen crea el
+      # subdirectorio versionado ella misma. Ver
+      # https://github.com/docker-library/postgres/pull/1259
+      - postgres_data:/var/lib/postgresql
+      - ./docker/postgres/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orders_saga"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4.3-management-alpine
+    container_name: orders-saga-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: orders_saga
+      RABBITMQ_DEFAULT_PASS: orders_saga_dev_only
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
