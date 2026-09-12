@@ -1,0 +1,19 @@
+# The build context is the repo root (the services need Directory.Build.props,
+# Directory.Packages.props and global.json), so keep everything else out of it.
+**/bin/
+**/obj/
+**/.vs/
+**/Properties/launchSettings.json
+
+.git/
+.github/
+.claude/
+docs/
+tests/
+
+*.md
+docker-compose*.yml
+**/Dockerfile
+.dockerignore
+.gitattributes
+.gitignore

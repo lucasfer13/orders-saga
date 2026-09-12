@@ -1,8 +1,11 @@
-# Local infra: Postgres (one database per service) and RabbitMQ with the
-# management UI. The 4 .NET services join this file later, once they have
-# a Dockerfile (see docs/BACKLOG.md).
+# Everything the system needs: Postgres, RabbitMQ with its management UI, and
+# the four .NET services. `docker compose up -d` is the only step.
 #
 # Local-dev-only credentials, not valid anywhere else -- not real secrets.
+#
+# The services run as Development so their OpenAPI document and Scalar UI are
+# reachable: showing the API is part of what this repo is for. The code keeps
+# the environment gate, so nothing is exposed outside this compose file.
 
 services:
   postgres:
@@ -43,6 +46,68 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  # The four services below have no healthcheck yet: they expose no health
+  # endpoint to point one at. Added alongside /health/ready.
+  orders:
+    build:
+      context: .
+      dockerfile: src/Orders.Api/Dockerfile
+    container_name: orders-saga-orders
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  inventory:
+    build:
+      context: .
+      dockerfile: src/Inventory.Api/Dockerfile
+    container_name: orders-saga-inventory
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  payments:
+    build:
+      context: .
+      dockerfile: src/Payments.Api/Dockerfile
+    container_name: orders-saga-payments
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  shipping:
+    build:
+      context: .
+      dockerfile: src/Shipping.Api/Dockerfile
+    container_name: orders-saga-shipping
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8083:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   postgres_data:
