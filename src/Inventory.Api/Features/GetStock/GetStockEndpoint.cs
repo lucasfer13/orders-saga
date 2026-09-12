@@ -8,5 +8,5 @@ internal static class GetStockEndpoint
     public static void MapGetStock(this IEndpointRouteBuilder routes) => routes.MapGet("/stock", GetStock);
 
     /// <summary>Current stock level per product.</summary>
-    private static Ok<IReadOnlyCollection<StockLevel>> GetStock(StockStore store) => TypedResults.Ok(store.Snapshot());
+    internal static Ok<IReadOnlyCollection<StockLevel>> GetStock(StockStore store) => TypedResults.Ok(store.Snapshot());
 }

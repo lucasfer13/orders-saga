@@ -84,6 +84,10 @@ estos pines en vez de asumir la última versión:
   instrumentación de OpenTelemetry y el pipeline propio de MassTransit; la
   validación, la integrada de .NET 10; la idempotencia, un filtro de
   consumer. Ninguna de esas tres cosas necesita pasar por un mediador.
+- **Los métodos de endpoint van `internal`, no `private`.** El generador que
+  vuelca los comentarios XML al documento OpenAPI se salta los miembros
+  privados: el `<summary>` se genera en el `.xml` pero nunca aparece en el
+  documento. Comprobado contra `/openapi/v1.json`, no asumido.
 
 ## Cómo se levanta y se testea
 

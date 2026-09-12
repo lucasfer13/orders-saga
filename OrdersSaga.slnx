@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="docker-compose.dcproj" />
   <Folder Name="/src/">
     <Project Path="src/Inventory.Api/Inventory.Api.csproj" />
     <Project Path="src/Orders.Api/Orders.Api.csproj" />
@@ -17,4 +16,7 @@
   <Folder Name="/tests/unit/">
     <Project Path="tests/unit/OrdersSaga.UnitTests/OrdersSaga.UnitTests.csproj" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>
