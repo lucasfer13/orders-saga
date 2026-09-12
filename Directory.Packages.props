@@ -6,18 +6,17 @@
   </PropertyGroup>
 
   <!--
-    Este fichero es la única fuente de versiones del repo. Cada .csproj hace
-    <PackageReference Include="..." /> sin Version: la versión vive aquí.
+    Single source of package versions in the repo. Each .csproj does
+    <PackageReference Include="..." /> with no Version attribute.
 
-    Todas las versiones de abajo se verificaron contra nuget.org el
-    2026-09-10 (T03), no se asumieron. Detalle y motivos en README.md.
+    All versions below were verified against nuget.org on 2026-09-10, not
+    assumed. Details and reasoning in README.md.
   -->
 
   <!--
-    MassTransit: fijado en la línea 8.5.8, NO en la 9.x. MassTransit pasó a
-    licencia comercial de pago a partir de v9 (ver massient.com/license); la
-    8.5.8 es la última release Apache-2.0, con soporte de seguridad anunciado
-    hasta finales de 2026. Revisar este pin antes de esa fecha.
+    MassTransit pinned to 8.5.8, NOT 9.x. v9+ went commercial (see
+    massient.com/license); 8.5.8 is the last Apache-2.0 release, with
+    security support announced through end of 2026. Revisit before then.
   -->
   <ItemGroup>
     <PackageVersion Include="MassTransit" Version="8.5.8" />
@@ -25,7 +24,7 @@
     <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.8" />
   </ItemGroup>
 
-  <!-- EF Core 10 + proveedor de PostgreSQL -->
+  <!-- EF Core 10 + PostgreSQL provider -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
@@ -49,11 +48,11 @@
   </ItemGroup>
 
   <!--
-    Librerías de test (ver ESTANDAR-CALIDAD.md sección 7). Verify.Xunit y
-    NetArchTest.Rules NO se usan a propósito: el primero está deprecado por
-    el propio mantenedor (sustituido por Verify.XunitV3), el segundo lleva
-    sin release desde 2021. Se sustituyen por sus equivalentes activos, lo
-    que exige xUnit v3 en vez de v2 (ver ItemGroup de xunit.v3 más abajo).
+    Test libraries (see ESTANDAR-CALIDAD.md section 7). Verify.Xunit and
+    NetArchTest.Rules are deliberately not used: the former is deprecated
+    by its own maintainer (replaced by Verify.XunitV3), the latter hasn't
+    shipped since 2021. Their actively maintained replacements require
+    xUnit v3 instead of v2 (see the xunit.v3 ItemGroup below).
   -->
   <ItemGroup>
     <PackageVersion Include="Shouldly" Version="4.3.0" />
@@ -65,9 +64,9 @@
   </ItemGroup>
 
   <!--
-    xUnit v3 + Microsoft.Testing.Platform. Reemplaza a xunit 2.9.3 /
-    xunit.runner.visualstudio (plantilla por defecto del SDK), migrado en T03
-    para poder usar Verify.XunitV3 y TngTech.ArchUnitNET.xUnitV3 desde ya.
+    xUnit v3 + Microsoft.Testing.Platform. Replaces xunit 2.9.3 /
+    xunit.runner.visualstudio (the SDK's default template), needed to use
+    Verify.XunitV3 and TngTech.ArchUnitNET.xUnitV3.
   -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />

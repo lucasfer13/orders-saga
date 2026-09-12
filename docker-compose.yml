@@ -1,9 +1,8 @@
-# Infraestructura local: Postgres (una base de datos por servicio) y
-# RabbitMQ con la UI de administración. Los 4 servicios .NET se añaden aquí
-# más adelante, cuando tengan Dockerfile (ver docs/BACKLOG.md).
+# Local infra: Postgres (one database per service) and RabbitMQ with the
+# management UI. The 4 .NET services join this file later, once they have
+# a Dockerfile (see docs/BACKLOG.md).
 #
-# Credenciales de desarrollo local únicamente, nunca válidas fuera de esta
-# máquina — no son secretos que proteger.
+# Local-dev-only credentials, not valid anywhere else -- not real secrets.
 
 services:
   postgres:
@@ -15,15 +14,12 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Desde la imagen postgres:18, el volumen de datos se monta en
-      # /var/lib/postgresql (no en .../data) — la imagen crea el
-      # subdirectorio versionado ella misma. Ver
-      # https://github.com/docker-library/postgres/pull/1259
+      # postgres:18 mounts the data volume at /var/lib/postgresql (not
+      # .../data) -- see https://github.com/docker-library/postgres/pull/1259
       #
-      # Sin script de init: cada servicio crea y migra su propia base de
-      # datos al arrancar, vía EF Core Database.Migrate() (ver
-      # ESTANDAR-CALIDAD.md, healthcheck /health/startup). Postgres arranca
-      # aquí solo con la base de mantenimiento.
+      # No init script: each service creates and migrates its own database
+      # on startup via EF Core Database.Migrate() (see ESTANDAR-CALIDAD.md,
+      # /health/startup). Postgres starts with only its maintenance database.
       - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U orders_saga"]

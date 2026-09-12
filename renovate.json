@@ -8,26 +8,26 @@
   "prConcurrentLimit": 5,
   "packageRules": [
     {
-      "description": "Actualizaciones menores y de parche de NuGet: agrupadas en un solo PR semanal, riesgo bajo de romper algo.",
+      "description": "NuGet minor/patch: grouped into one weekly PR, low risk.",
       "matchManagers": ["nuget"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "nuget minor/patch",
       "automerge": false
     },
     {
-      "description": "Actualizaciones mayores de NuGet: PR separado por paquete, nunca agrupadas. Pueden traer cambios de comportamiento (ver ESTANDAR-CALIDAD.md, aviso sobre licencias y breaking changes).",
+      "description": "NuGet major: separate PR per package, never grouped. Can bring behavior changes (see ESTANDAR-CALIDAD.md, license/breaking-change notes).",
       "matchManagers": ["nuget"],
       "matchUpdateTypes": ["major"],
       "groupName": null,
       "labels": ["dependencies", "major-update"]
     },
     {
-      "description": "GitHub Actions: agrupadas, riesgo bajo y volumen alto de ruido si van una a una.",
+      "description": "GitHub Actions: grouped, low risk, noisy one-by-one.",
       "matchManagers": ["github-actions"],
       "groupName": "github actions"
     },
     {
-      "description": "Docker base images: PR separado, pueden afectar a la superficie de ataque escaneada por Trivy/docker scout.",
+      "description": "Docker base images: separate PR, can affect the Trivy/docker scout attack surface.",
       "matchManagers": ["dockerfile", "docker-compose"],
       "groupName": null,
       "labels": ["dependencies", "docker"]

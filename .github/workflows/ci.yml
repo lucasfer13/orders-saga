@@ -22,17 +22,16 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      # docker-compose.dcproj vive junto a OrdersSaga.slnx en la raíz, así que
-      # los comandos dotnet sin objetivo explícito son ambiguos (MSB1011).
-      # Se apunta siempre a OrdersSaga.slnx; el propio SDK ignora el dcproj
-      # (no es un proyecto de paquetes NuGet) en restore/build.
+      # docker-compose.dcproj sits next to OrdersSaga.slnx, so a bare dotnet
+      # command is ambiguous (MSB1011). Always target the .slnx; the SDK
+      # skips the dcproj (not a NuGet-package project) on restore/build.
       - name: Restore
         run: dotnet restore OrdersSaga.slnx
 
       - name: Build
         run: dotnet build OrdersSaga.slnx --no-restore --configuration Release
 
-      - name: Publicar artefacto de build
+      - name: Publish build artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-output
@@ -52,10 +51,10 @@ jobs:
       - name: dotnet format --verify-no-changes
         run: dotnet format OrdersSaga.slnx --verify-no-changes --verbosity diagnostic
 
-  # xUnit v3 corre sobre Microsoft.Testing.Platform (ver global.json), no
-  # VSTest: cada job apunta a un .csproj con --project, no a una carpeta, y
-  # el TRX se pide con --report-trx (paquete Microsoft.Testing.Extensions.
-  # TrxReport en cada proyecto de test) en vez de --logger "trx;...".
+  # xUnit v3 runs on Microsoft.Testing.Platform (see global.json), not
+  # VSTest: each job targets a .csproj with --project, not a folder, and
+  # TRX needs --report-trx (Microsoft.Testing.Extensions.TrxReport in each
+  # test project) instead of --logger "trx;...".
   test-unit:
     needs: restore-and-build
     runs-on: ubuntu-latest
@@ -66,12 +65,12 @@ jobs:
           dotnet-version: "10.0.x"
       - name: Restore
         run: dotnet restore OrdersSaga.slnx
-      - name: Tests unitarios
+      - name: Unit tests
         run: >
           dotnet test --project tests/unit/OrdersSaga.UnitTests/OrdersSaga.UnitTests.csproj
           --configuration Release --no-restore
           --report-trx --results-directory ./test-results
-      - name: Publicar resultados
+      - name: Publish results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -88,13 +87,13 @@ jobs:
           dotnet-version: "10.0.x"
       - name: Restore
         run: dotnet restore OrdersSaga.slnx
-      # Testcontainers necesita Docker: disponible por defecto en ubuntu-latest.
-      - name: Tests de integración (Testcontainers)
+      # Testcontainers needs Docker: available by default on ubuntu-latest.
+      - name: Integration tests (Testcontainers)
         run: >
           dotnet test --project tests/integration/OrdersSaga.IntegrationTests/OrdersSaga.IntegrationTests.csproj
           --configuration Release --no-restore
           --report-trx --results-directory ./test-results
-      - name: Publicar resultados
+      - name: Publish results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -111,14 +110,14 @@ jobs:
           dotnet-version: "10.0.x"
       - name: Restore
         run: dotnet restore OrdersSaga.slnx
-      # Job separado a propósito (ver PLAN.md): que se vea de un vistazo si
-      # lo que falla es una frontera arquitectónica, no un test funcional.
-      - name: Tests de arquitectura
+      # Separate job on purpose (see PLAN.md): an architecture-boundary
+      # failure should be visible at a glance, not mixed with functional tests.
+      - name: Architecture tests
         run: >
           dotnet test --project tests/architecture/OrdersSaga.ArchitectureTests/OrdersSaga.ArchitectureTests.csproj
           --configuration Release --no-restore
           --report-trx --results-directory ./test-results
-      - name: Publicar resultados
+      - name: Publish results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -135,37 +134,36 @@ jobs:
           dotnet-version: "10.0.x"
       - name: Restore
         run: dotnet restore OrdersSaga.slnx
-      # dotnet list package --vulnerable no puede apuntar a la solución
-      # entera (docker-compose.dcproj no es un proyecto de paquetes NuGet),
-      # así que se escanea cada .csproj por separado. El comando además
-      # siempre devuelve exit code 0 aunque encuentre vulnerabilidades
-      # (limitación conocida del SDK), así que el fallo se deriva de mirar
-      # si el JSON de salida trae la clave "vulnerabilities" — igual que en
-      # el hook de pre-commit (.claude/settings.json).
-      - name: dotnet list package --vulnerable (por proyecto)
+      # dotnet list package --vulnerable can't target the whole solution
+      # (docker-compose.dcproj isn't a NuGet-package project), so each
+      # .csproj is scanned separately. The command also always exits 0
+      # regardless of findings (known SDK limitation), so pass/fail comes
+      # from checking the JSON output for a "vulnerabilities" key — same
+      # approach as the pre-commit hook (.claude/settings.json).
+      - name: dotnet list package --vulnerable (per project)
         run: |
           mkdir -p vulnerability-scan
           fail=0
           while IFS= read -r proj; do
             name="$(basename "$proj" .csproj)"
-            echo "Escaneando $proj"
+            echo "Scanning $proj"
             dotnet list "$proj" package --vulnerable --include-transitive --format json > "vulnerability-scan/$name.json"
             if grep -q '"vulnerabilities"' "vulnerability-scan/$name.json"; then
-              echo "::error::Paquete vulnerable encontrado en $proj"
+              echo "::error::Vulnerable package found in $proj"
               fail=1
             fi
           done < <(find src tests -name '*.csproj')
           exit $fail
-      - name: Publicar log
+      - name: Publish log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vulnerability-scan-log
           path: vulnerability-scan/*.json
 
-  # Placeholder deliberado: cuando los 4 servicios tengan Dockerfile, añadir
-  # aquí un job de Trivy o `docker scout` sobre la imagen final (ver
-  # PLAN.md, "Higiene de CI que se ve desde fuera").
+  # Deliberate placeholder: once the 4 services have a Dockerfile, add a
+  # Trivy or `docker scout` job here for the final image (see PLAN.md,
+  # "Higiene de CI que se ve desde fuera").
   # image-scan:
   #   needs: restore-and-build
   #   runs-on: ubuntu-latest
