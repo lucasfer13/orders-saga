@@ -9,8 +9,8 @@
     Single source of package versions in the repo. Each .csproj does
     <PackageReference Include="..." /> with no Version attribute.
 
-    All versions below were verified against nuget.org on 2026-09-10 (T03),
-    not assumed. Details and reasoning in README.md.
+    All versions below were verified against nuget.org on 2026-09-10, not
+    assumed. Details and reasoning in README.md.
   -->
 
   <!--
@@ -65,8 +65,8 @@
 
   <!--
     xUnit v3 + Microsoft.Testing.Platform. Replaces xunit 2.9.3 /
-    xunit.runner.visualstudio (the SDK's default template), migrated in T03
-    to use Verify.XunitV3 and TngTech.ArchUnitNET.xUnitV3.
+    xunit.runner.visualstudio (the SDK's default template), needed to use
+    Verify.XunitV3 and TngTech.ArchUnitNET.xUnitV3.
   -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
