@@ -71,6 +71,19 @@ estos pines en vez de asumir la última versión:
   arrancar vía `Database.Migrate()` de EF Core, ligado al healthcheck
   `/health/startup`. No añadas un script SQL de creación de bases de datos:
   esa responsabilidad vive en el código de migraciones de cada servicio.
+- **Mediador solo en Orders, y es `Mediator` de martinothamar, no MediatR.**
+  MediatR exige clave de licencia comercial desde la v13 (la última
+  Apache-2.0 es la 12.5.0, de abril de 2025). `Mediator` es MIT, usa source
+  generators y expone una API casi idéntica (`IRequest<T>`,
+  `IPipelineBehavior<,>`), así que el pipeline de `ESTANDAR-CALIDAD.md` se
+  traslada tal cual. Los handlers se registran en compilación, así que
+  Scrutor solo hace falta para los validadores.
+- **Inventory, Payments y Shipping no llevan mediador.** Sus endpoints y
+  consumidores llaman directamente a su handler: eso es lo que significa
+  "casi transaction script". El logging y las trazas los da la
+  instrumentación de OpenTelemetry y el pipeline propio de MassTransit; la
+  validación, la integrada de .NET 10; la idempotencia, un filtro de
+  consumer. Ninguna de esas tres cosas necesita pasar por un mediador.
 
 ## Cómo se levanta y se testea
 
