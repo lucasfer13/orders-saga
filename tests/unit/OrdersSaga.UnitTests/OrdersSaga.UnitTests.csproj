@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- CA1707: xUnit test names use underscores (Given_When_Then) -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
@@ -12,6 +14,7 @@
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
