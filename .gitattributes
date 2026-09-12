@@ -1,0 +1,11 @@
+# .editorconfig requires LF. Without this, core.autocrlf=true on Windows checks
+# files out as CRLF and `dotnet format --verify-no-changes` fails locally on a
+# clean tree, even though CI (Linux) passes.
+* text=auto eol=lf
+
+# Binary assets: never touch the bytes.
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.ico binary
