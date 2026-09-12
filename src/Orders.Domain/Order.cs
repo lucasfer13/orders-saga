@@ -3,7 +3,7 @@ using Orders.Domain.Exceptions;
 
 namespace Orders.Domain;
 
-/// <summary>Coordinates the saga and has real domain invariants, unlike the thin Inventory/Payments/Shipping slices — see CLAUDE.md and the T37 ADR.</summary>
+/// <summary>Coordinates the saga and has real domain invariants, unlike the thin Inventory/Payments/Shipping slices — see CLAUDE.md.</summary>
 public sealed class Order
 {
     private readonly List<OrderLine> _lines = [];
@@ -11,7 +11,7 @@ public sealed class Order
 
     private Order()
     {
-        // Private constructor for EF Core materialization (see T11).
+        // Private constructor for EF Core materialization.
     }
 
     private Order(OrderId id, CustomerId customerId, IReadOnlyCollection<OrderLine> lines)
