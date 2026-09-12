@@ -4,7 +4,7 @@ namespace Orders.Domain.Exceptions;
 public sealed class InvalidOrderStateTransitionException : OrderDomainException
 {
     public InvalidOrderStateTransitionException(OrderStatus currentStatus, string attemptedTransition)
-        : base($"No se puede aplicar '{attemptedTransition}' a un pedido en estado {currentStatus}.")
+        : base($"Cannot apply '{attemptedTransition}' to an order in status {currentStatus}.")
     {
         CurrentStatus = currentStatus;
         AttemptedTransition = attemptedTransition;

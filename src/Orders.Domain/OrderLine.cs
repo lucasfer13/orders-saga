@@ -5,7 +5,7 @@ public sealed record OrderLine
     public OrderLine(ProductId productId, int quantity, Money unitPrice)
     {
         if (quantity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), quantity, "La cantidad debe ser mayor que cero.");
+            throw new ArgumentOutOfRangeException(nameof(quantity), quantity, "Quantity must be greater than zero.");
 
         ProductId = productId;
         Quantity = quantity;

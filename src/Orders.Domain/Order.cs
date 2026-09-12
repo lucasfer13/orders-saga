@@ -38,7 +38,7 @@ public sealed class Order
     public static Order Place(OrderId id, CustomerId customerId, IReadOnlyCollection<OrderLine> lines)
     {
         if (lines.Count == 0)
-            throw new InvalidOrderException("Un pedido debe tener al menos una línea.");
+            throw new InvalidOrderException("An order must have at least one line.");
 
         var order = new Order(id, customerId, lines);
         order.Raise(new OrderPlaced(order.Id, order.CustomerId, order.Total, DateTimeOffset.UtcNow));

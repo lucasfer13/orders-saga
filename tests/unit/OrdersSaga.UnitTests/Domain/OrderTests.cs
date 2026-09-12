@@ -83,7 +83,7 @@ public class OrderTests
         var order = Order.Place(OrderId.New(), CustomerId.New(), [Line()]);
         order.MarkStockReserved();
 
-        order.BeginCompensation("pago rechazado");
+        order.BeginCompensation("payment declined");
 
         order.Status.ShouldBe(OrderStatus.Compensating);
     }
@@ -95,7 +95,7 @@ public class OrderTests
         order.MarkStockReserved();
         order.MarkPaymentCharged();
 
-        order.BeginCompensation("fallo en expedición");
+        order.BeginCompensation("shipping failure");
 
         order.Status.ShouldBe(OrderStatus.Compensating);
     }
@@ -105,7 +105,7 @@ public class OrderTests
     {
         var order = Order.Place(OrderId.New(), CustomerId.New(), [Line()]);
 
-        Should.Throw<InvalidOrderStateTransitionException>(() => order.BeginCompensation("motivo"));
+        Should.Throw<InvalidOrderStateTransitionException>(() => order.BeginCompensation("reason"));
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class OrderTests
         order.MarkPaymentCharged();
         order.MarkShipped();
 
-        Should.Throw<InvalidOrderStateTransitionException>(() => order.BeginCompensation("motivo"));
+        Should.Throw<InvalidOrderStateTransitionException>(() => order.BeginCompensation("reason"));
     }
 
     [Fact]
@@ -124,10 +124,10 @@ public class OrderTests
     {
         var order = Order.Place(OrderId.New(), CustomerId.New(), [Line()]);
         order.MarkStockReserved();
-        order.BeginCompensation("stock insuficiente en otro paso");
+        order.BeginCompensation("insufficient stock at another step");
         order.ClearDomainEvents();
 
-        order.Cancel("compensación completada");
+        order.Cancel("compensation completed");
 
         order.Status.ShouldBe(OrderStatus.Cancelled);
         order.DomainEvents.Single().ShouldBeOfType<OrderCancelled>();
@@ -138,6 +138,6 @@ public class OrderTests
     {
         var order = Order.Place(OrderId.New(), CustomerId.New(), [Line()]);
 
-        Should.Throw<InvalidOrderStateTransitionException>(() => order.Cancel("motivo"));
+        Should.Throw<InvalidOrderStateTransitionException>(() => order.Cancel("reason"));
     }
 }

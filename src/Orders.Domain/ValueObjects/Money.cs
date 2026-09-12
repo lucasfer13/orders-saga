@@ -8,9 +8,9 @@ public readonly record struct Money
     public Money(decimal amount, string currency = "EUR")
     {
         if (amount < 0)
-            throw new ArgumentOutOfRangeException(nameof(amount), amount, "El importe no puede ser negativo.");
+            throw new ArgumentOutOfRangeException(nameof(amount), amount, "Amount cannot be negative.");
         if (string.IsNullOrWhiteSpace(currency))
-            throw new ArgumentException("La divisa es obligatoria.", nameof(currency));
+            throw new ArgumentException("Currency is required.", nameof(currency));
 
         Amount = amount;
         Currency = currency;
@@ -23,7 +23,7 @@ public readonly record struct Money
         if (left.Currency != right.Currency)
         {
             throw new InvalidOperationException(
-                $"No se pueden sumar importes en divisas distintas ({left.Currency} y {right.Currency}).");
+                $"Cannot add amounts in different currencies ({left.Currency} and {right.Currency}).");
         }
 
         return new Money(left.Amount + right.Amount, left.Currency);
