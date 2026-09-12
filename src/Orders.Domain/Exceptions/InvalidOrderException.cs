@@ -1,6 +1,6 @@
 namespace Orders.Domain.Exceptions;
 
-/// <summary>Un pedido se intentó construir en un estado que viola sus invariantes (p. ej. sin líneas).</summary>
+/// <summary>An order was constructed in a state that violates its invariants (e.g. no lines).</summary>
 public sealed class InvalidOrderException : OrderDomainException
 {
     public InvalidOrderException(string message) : base(message)

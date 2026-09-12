@@ -1,6 +1,6 @@
 namespace Orders.Domain.Exceptions;
 
-/// <summary>Se intentó aplicar una transición de estado que no es válida desde el estado actual del pedido.</summary>
+/// <summary>Attempted a transition that's not valid from the order's current state.</summary>
 public sealed class InvalidOrderStateTransitionException : OrderDomainException
 {
     public InvalidOrderStateTransitionException(OrderStatus currentStatus, string attemptedTransition)

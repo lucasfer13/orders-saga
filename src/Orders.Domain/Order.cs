@@ -3,12 +3,7 @@ using Orders.Domain.Exceptions;
 
 namespace Orders.Domain;
 
-/// <summary>
-/// Coordina la saga y tiene invariantes de dominio reales, así que — a
-/// diferencia de Inventory/Payments/Shipping, que son vertical slices finos
-/// — lleva un núcleo de dominio con dependencias hacia adentro (ver
-/// CLAUDE.md y el ADR de T37).
-/// </summary>
+/// <summary>Coordinates the saga and has real domain invariants, unlike the thin Inventory/Payments/Shipping slices — see CLAUDE.md and the T37 ADR.</summary>
 public sealed class Order
 {
     private readonly List<OrderLine> _lines = [];
@@ -16,7 +11,7 @@ public sealed class Order
 
     private Order()
     {
-        // Constructor privado para materialización de EF Core (ver T11).
+        // Private constructor for EF Core materialization (see T11).
     }
 
     private Order(OrderId id, CustomerId customerId, IReadOnlyCollection<OrderLine> lines)
