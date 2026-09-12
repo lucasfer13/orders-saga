@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [master]
+  # No base-branch filter: a stacked PR targeting another feature branch must
+  # still get checks, or it merges with none and silently bypasses the
+  # green-or-it-doesn't-merge rule.
   pull_request:
-    branches: [master]
 
 env:
   DOTNET_NOLOGO: true

@@ -31,6 +31,16 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
   </ItemGroup>
 
+  <!--
+    OpenAPI document generation is built into ASP.NET Core; Scalar only
+    renders it, and is the UI that ships an HTTP client to actually send
+    requests (Redoc, for instance, is read-only).
+  -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.3" />
+  </ItemGroup>
+
   <!-- Testcontainers -->
   <ItemGroup>
     <PackageVersion Include="Testcontainers" Version="4.15.0" />
