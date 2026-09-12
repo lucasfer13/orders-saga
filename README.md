@@ -27,16 +27,23 @@ docs/
 
 ```
 docker compose up -d
-dotnet build OrdersSaga.slnx
 ```
 
-`docker compose up -d` deja Postgres y RabbitMQ (con UI de administración) arriba, con healthcheck, sin ningún paso manual. Postgres arranca vacío a propósito: cada servicio crea y migra su propia base de datos (`orders`, `inventory`, `payments`, `shipping`) al arrancar, vía `Database.Migrate()` de EF Core — ver el healthcheck `/health/startup` en `ESTANDAR-CALIDAD.md`. No hay script de init de bases de datos; la única fuente de verdad es el código de migraciones de cada servicio (T11). Los 4 servicios .NET se añaden al compose más adelante, cuando tengan Dockerfile.
+Un solo comando levanta los seis contenedores: Postgres, RabbitMQ y los cuatro servicios. Postgres arranca vacío a propósito, porque cada servicio crea y migra su propia base de datos (`orders`, `inventory`, `payments`, `shipping`) al arrancar vía `Database.Migrate()` de EF Core — ver el healthcheck `/health/startup` en `ESTANDAR-CALIDAD.md`. No hay script de init de bases de datos: la única fuente de verdad es el código de migraciones de cada servicio.
 
-| Servicio | Puerto | Credenciales (solo dev local) |
+| Servicio | URL | Credenciales (solo dev local) |
 |---|---|---|
+| Orders | http://localhost:8080 | — |
+| Inventory | http://localhost:8081/scalar | — |
+| Payments | http://localhost:8082/scalar | — |
+| Shipping | http://localhost:8083/scalar | — |
 | Postgres | `localhost:5432` | `orders_saga` / `orders_saga_dev_only` |
 | RabbitMQ (AMQP) | `localhost:5672` | `orders_saga` / `orders_saga_dev_only` |
 | RabbitMQ (UI) | http://localhost:15672 | `orders_saga` / `orders_saga_dev_only` |
+
+La documentación de cada API se sirve en `/scalar` (UI) y `/openapi/v1.json` (documento OpenAPI 3.1). `Orders` todavía no la expone porque aún no tiene endpoints propios.
+
+Las imágenes son Alpine (~186 MB por servicio) y corren como usuario no privilegiado (uid 1654), no como root.
 
 Para compilar y correr los tests (proyectos de test en xUnit v3 + Microsoft.Testing.Platform, `dotnet test` va en modo MTP vía `global.json`):
 
