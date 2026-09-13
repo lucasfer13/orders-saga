@@ -1,12 +1,14 @@
 using Inventory.Api.Features.GetStock;
 using Inventory.Api.Features.ReleaseStock;
 using Inventory.Api.Features.ReserveStock;
+using Inventory.Api.HealthChecks;
 using Inventory.Api.Storage;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddServiceHealthChecks();
 builder.Services.AddSingleton<StockStore>();
 builder.Services.AddScoped<ReserveStockHandler>();
 builder.Services.AddScoped<ReleaseStockHandler>();
@@ -20,6 +22,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.MapHealthCheckEndpoints();
 app.MapGetStock();
 
 app.Run();

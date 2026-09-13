@@ -22,12 +22,12 @@ public abstract class HealthEndpointTests<TEntryPoint>(WebApplicationFactory<TEn
     {
         using var client = factory.CreateClient();
 
-        var response = await client.GetAsync(path);
+        var response = await client.GetAsync(path, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Content.Headers.ContentType?.MediaType.ShouldBe("application/json");
 
-        var report = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var report = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: TestContext.Current.CancellationToken);
         report.GetProperty("status").GetString().ShouldBe("Healthy");
     }
 
@@ -36,7 +36,7 @@ public abstract class HealthEndpointTests<TEntryPoint>(WebApplicationFactory<TEn
     {
         using var client = factory.CreateClient();
 
-        var report = await client.GetFromJsonAsync<JsonElement>("/health/live");
+        var report = await client.GetFromJsonAsync<JsonElement>("/health/live", cancellationToken: TestContext.Current.CancellationToken);
 
         // The rule that matters: a liveness probe that fails when the database is
         // down makes the orchestrator restart a healthy process in a loop.

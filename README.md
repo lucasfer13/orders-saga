@@ -43,6 +43,16 @@ Un solo comando levanta los seis contenedores: Postgres, RabbitMQ y los cuatro s
 
 La documentación de cada API se sirve en `/scalar` (UI) y `/openapi/v1.json` (documento OpenAPI 3.1). `Orders` todavía no la expone porque aún no tiene endpoints propios.
 
+Los cuatro servicios exponen tres probes, en JSON con el detalle de cada check:
+
+| Probe | Qué responde | Quién lo usa |
+|---|---|---|
+| `/health/live` | El proceso está vivo. **Nunca** comprueba dependencias. | Reinicio del orquestador |
+| `/health/ready` | Dependencias accesibles | `depends_on` del compose, balanceador |
+| `/health/startup` | Migraciones aplicadas, arranque completo | Arranque en frío |
+
+`/ready` y `/startup` responden hoy con la lista de checks vacía: todavía no hay dependencias que comprobar ni migraciones que aplicar. El healthcheck del compose apunta a `/health/ready`.
+
 Las imágenes son Alpine (~186 MB por servicio) y corren como usuario no privilegiado (uid 1654), no como root.
 
 Para compilar y correr los tests (proyectos de test en xUnit v3 + Microsoft.Testing.Platform, `dotnet test` va en modo MTP vía `global.json`):

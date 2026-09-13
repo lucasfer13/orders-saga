@@ -2,11 +2,13 @@ using Scalar.AspNetCore;
 using Shipping.Api.Features.CancelShipment;
 using Shipping.Api.Features.GetShipments;
 using Shipping.Api.Features.ShipOrder;
+using Shipping.Api.HealthChecks;
 using Shipping.Api.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddServiceHealthChecks();
 builder.Services.AddSingleton<ShipmentStore>();
 builder.Services.AddScoped<ShipOrderHandler>();
 builder.Services.AddScoped<CancelShipmentHandler>();
@@ -20,6 +22,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.MapHealthCheckEndpoints();
 app.MapGetShipments();
 
 app.Run();
