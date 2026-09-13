@@ -38,7 +38,11 @@ En `Orders`:
   `CancellationToken`. Es una dependencia hacia adentro: el dominio define lo
   que necesita, la infraestructura lo cumple.
 - `Orders.Api` implementa ese puerto sobre `OrdersDbContext`. Esa
-  implementación es **el único tipo del servicio que ve el `DbContext`**.
+  implementación es **el único tipo de la lógica de aplicación del servicio que
+  ve el `DbContext`**. Lo ven además, y no hay forma de evitarlo, el propio
+  contexto, la fábrica de diseño que usa `dotnet ef`, el migrador de arranque,
+  las migraciones que genera EF y el registro del healthcheck: son fontanería
+  de EF y del host, no código que manipule el agregado.
 - Ningún handler de `Orders` inyecta `OrdersDbContext`, ni un `DbSet`, ni
   ninguna interfaz que los envuelva.
 - El repositorio **no** expone `SaveChangesAsync` ni abre transacciones: el
@@ -63,8 +67,10 @@ y sólo añade indirección.
 
 `architecture-guard` escribe, por tanto, **dos** reglas y no una:
 
-1. Ningún tipo de `Orders.Api` fuera de la implementación del repositorio
-   depende de `OrdersDbContext`.
+1. Ningún tipo de `Orders.Api` depende de `OrdersDbContext` salvo la
+   implementación del repositorio y la fontanería enumerada arriba, que el test
+   lista explícitamente para que añadir un nombre a esa lista sea una decisión
+   visible en el diff y no un descuido.
 2. Ningún tipo de `Inventory.Api`, `Payments.Api` o `Shipping.Api` depende del
    `DbContext` de otro servicio.
 
