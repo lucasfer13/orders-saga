@@ -2,7 +2,11 @@
 
 ## Estado
 
-Aceptada
+Reemplazada por [0006](./0006-constructor-privado-en-orderline.md) en la
+parte de materialización de `OrderLine` (el punto de riesgo técnico descrito
+más abajo, en "Consecuencias"). El resto de reglas de mapeo de este ADR
+—IDs, `Order.Total`, `Status`, `DomainEvents`, clave de `order_lines`— sigue
+vigente y no se repite en el 0006.
 
 ## Contexto
 
