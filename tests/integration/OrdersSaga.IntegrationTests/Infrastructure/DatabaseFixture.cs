@@ -11,9 +11,8 @@ public sealed class DatabaseFixture : IAsyncLifetime
 {
     private static readonly TimeSpan StartupBudget = TimeSpan.FromSeconds(60);
 
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:18-alpine")
-        .Build();
+    // Same image as docker-compose.yml, so the tests exercise the engine the demo runs on.
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
     private ServiceFactory<Shipping.Api.ApiMarker>? _shipping;
 

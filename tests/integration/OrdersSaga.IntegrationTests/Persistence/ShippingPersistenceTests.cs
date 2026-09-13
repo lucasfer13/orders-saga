@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace OrdersSaga.IntegrationTests.Persistence;
 
-[Collection(DatabaseCollection.Name)]
+[Collection(SharedDatabase.Name)]
 public class ShippingPersistenceTests(DatabaseFixture fixture)
 {
     [Fact]

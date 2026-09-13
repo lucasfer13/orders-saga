@@ -5,7 +5,7 @@ namespace OrdersSaga.IntegrationTests.Infrastructure;
 /// the service hosts are built once per run instead of once per class.
 /// </summary>
 [CollectionDefinition(Name)]
-public sealed class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+public sealed class SharedDatabase : ICollectionFixture<DatabaseFixture>
 {
     public const string Name = "database";
 }

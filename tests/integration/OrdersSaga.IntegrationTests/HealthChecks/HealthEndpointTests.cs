@@ -84,7 +84,7 @@ public class PaymentsHealthEndpointTests(WebApplicationFactory<Payments.Api.ApiM
     protected override HttpClient CreateClient() => factory.CreateClient();
 }
 
-[Collection(DatabaseCollection.Name)]
+[Collection(SharedDatabase.Name)]
 public class ShippingHealthEndpointTests(DatabaseFixture fixture) : PersistedServiceHealthEndpointTests
 {
     protected override HttpClient CreateClient() => fixture.Shipping.CreateClient();
