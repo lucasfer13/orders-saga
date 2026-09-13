@@ -78,6 +78,51 @@ public class InventoryPersistenceTests(DatabaseFixture fixture)
         (await Available(product)).ShouldBe(0);
     }
 
+    /// <summary>
+    /// The in-memory StockStore treated a second reservation for the same order and
+    /// product as an overwrite, which leaked stock (the first reservation's units were
+    /// never given back). The composite primary key on stock_reservations refuses the
+    /// second insert outright and the transaction rolls back, so the failed attempt
+    /// leaves the first reservation and the discounted stock untouched.
+    /// </summary>
+    [Fact]
+    public async Task Reserving_the_same_order_and_product_twice_is_rejected_by_the_primary_key()
+    {
+        var product = await GivenStock(10);
+        var orderId = Guid.NewGuid();
+
+        (await Reserve(orderId, (product, 3))).Succeeded.ShouldBeTrue();
+
+        await Should.ThrowAsync<DbUpdateException>(() => Reserve(orderId, (product, 2)));
+
+        (await Available(product)).ShouldBe(7);
+        (await ReservationCount(orderId)).ShouldBe(1);
+    }
+
+    /// <summary>
+    /// ADR-0005 processes a reservation's lines in a deterministic order (by product id)
+    /// precisely so that two reservations racing for the same two products cannot each
+    /// hold one product's lock while waiting for the other's. Submitting the lines in
+    /// opposite order per task is what would make a naive implementation deadlock.
+    /// </summary>
+    [Fact]
+    public async Task Concurrent_reservations_across_two_products_do_not_deadlock()
+    {
+        const int Attempts = 24;
+
+        var first = await GivenStock(Attempts);
+        var second = await GivenStock(Attempts);
+
+        var results = await Task.WhenAll(Enumerable.Range(0, Attempts).Select(attempt => Task.Run(() =>
+            attempt % 2 == 0
+                ? Reserve(Guid.NewGuid(), (first, 1), (second, 1))
+                : Reserve(Guid.NewGuid(), (second, 1), (first, 1)))));
+
+        results.ShouldAllBe(result => result.Succeeded);
+        (await Available(first)).ShouldBe(0);
+        (await Available(second)).ShouldBe(0);
+    }
+
     [Fact]
     public async Task Releasing_gives_the_quantities_back_and_drops_the_reservations()
     {
