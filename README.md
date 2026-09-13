@@ -73,3 +73,12 @@ Las versiones de `Directory.Packages.props` se comprobaron contra nuget.org el *
 **NetArchTest.Rules → ArchUnitNET.** `NetArchTest.Rules` no tiene un release desde 2021. Se usa `TngTech.ArchUnitNET` + `TngTech.ArchUnitNET.xUnitV3` en su lugar (activamente mantenido, con paquete companion para xUnit v3), que es la alternativa que `ESTANDAR-CALIDAD.md` ya dejaba abierta.
 
 **EF Core 10 / Npgsql / Testcontainers / OpenTelemetry:** sin sorpresas — versiones estables, sin incidencias de compatibilidad con .NET 10 conocidas a la fecha de la comprobación.
+
+**Añadidos al pasar a PostgreSQL (T11).** Dos paquetes nuevos, comprobados contra nuget.org igual que el resto:
+
+| Paquete | Versión | Por qué esa versión |
+|---|---|---|
+| `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore` | 10.0.12 | Comprueba la base a través del mismo `DbContext` que usa el servicio, no abriendo un socket aparte. Alineada con el pin de EF Core. |
+| `EFCore.NamingConventions` | 10.0.1 | `snake_case` con una línea por contexto en vez de nombrar cada columna a mano. Exige `Microsoft.EntityFrameworkCore >= 10.0.1 && < 11.0.0`, compatible con el 10.0.12 fijado. |
+
+La herramienta `dotnet-ef` se fija en `.config/dotnet-tools.json` a la misma versión que EF Core, para que generar una migración no dependa de lo que cada máquina tenga instalado globalmente: `dotnet tool restore` y a correr.
