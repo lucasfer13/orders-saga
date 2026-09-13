@@ -1,6 +1,6 @@
+using Inventory.Api.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Inventory.Api.Persistence;
 
 namespace Inventory.Api.HealthChecks;
 

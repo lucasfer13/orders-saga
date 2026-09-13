@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Inventory.Api.Persistence;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Inventory.Api.HealthChecks;
 
