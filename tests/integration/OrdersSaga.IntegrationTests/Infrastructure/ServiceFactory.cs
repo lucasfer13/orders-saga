@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 
 namespace OrdersSaga.IntegrationTests.Infrastructure;
 
@@ -24,7 +23,15 @@ public sealed class ServiceFactory<TEntryPoint>(string connectionString, IReadOn
             overrides[key] = value;
         }
 
-        // Added last so it wins over the service's own appsettings files.
-        builder.ConfigureAppConfiguration(configuration => configuration.AddInMemoryCollection(overrides));
+        // UseSetting, not ConfigureAppConfiguration: every Program.cs reads its
+        // connection string off builder.Configuration before calling Build(), and
+        // configuration sources added here are only merged in by Build(). With
+        // ConfigureAppConfiguration the override arrived too late and the service
+        // silently fell back to appsettings.Development.json — which points at the
+        // compose database, so the suite passed locally and failed everywhere else.
+        foreach (var (key, value) in overrides)
+        {
+            builder.UseSetting(key, value);
+        }
     }
 }
