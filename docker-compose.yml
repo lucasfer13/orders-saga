@@ -76,6 +76,11 @@ services:
     container_name: orders-saga-inventory
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      # Environment variables outrank appsettings.Development.json, so this wins
+      # over the localhost default the repo versions for `dotnet run`.
+      ConnectionStrings__Database: "Host=postgres;Port=5432;Database=inventory;Username=orders_saga;Password=orders_saga_dev_only;Timeout=3"
+      # Off by default in the service; on here because without stock there is no demo.
+      Inventory__SeedStock: "true"
     ports:
       - "8081:8080"
     depends_on:
