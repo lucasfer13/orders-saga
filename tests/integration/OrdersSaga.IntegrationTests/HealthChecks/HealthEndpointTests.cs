@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 using OrdersSaga.IntegrationTests.Infrastructure;
 using Shouldly;
 
@@ -66,10 +65,10 @@ public abstract class PersistedServiceHealthEndpointTests : HealthEndpointTests
     }
 }
 
-public class OrdersHealthEndpointTests(WebApplicationFactory<Orders.Api.ApiMarker> factory)
-    : HealthEndpointTests, IClassFixture<WebApplicationFactory<Orders.Api.ApiMarker>>
+[Collection(SharedDatabase.Name)]
+public class OrdersHealthEndpointTests(DatabaseFixture fixture) : PersistedServiceHealthEndpointTests
 {
-    protected override HttpClient CreateClient() => factory.CreateClient();
+    protected override HttpClient CreateClient() => fixture.Orders.CreateClient();
 }
 
 [Collection(SharedDatabase.Name)]

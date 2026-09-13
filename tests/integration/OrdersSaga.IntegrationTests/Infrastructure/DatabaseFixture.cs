@@ -21,6 +21,7 @@ public sealed class DatabaseFixture : IAsyncLifetime
     private ServiceFactory<Shipping.Api.ApiMarker>? _shipping;
     private ServiceFactory<Payments.Api.ApiMarker>? _payments;
     private ServiceFactory<Inventory.Api.ApiMarker>? _inventory;
+    private ServiceFactory<Orders.Api.ApiMarker>? _orders;
 
     public ServiceFactory<Shipping.Api.ApiMarker> Shipping =>
         _shipping ?? throw new InvalidOperationException("The fixture has not been initialised.");
@@ -30,6 +31,9 @@ public sealed class DatabaseFixture : IAsyncLifetime
 
     public ServiceFactory<Inventory.Api.ApiMarker> Inventory =>
         _inventory ?? throw new InvalidOperationException("The fixture has not been initialised.");
+
+    public ServiceFactory<Orders.Api.ApiMarker> Orders =>
+        _orders ?? throw new InvalidOperationException("The fixture has not been initialised.");
 
     public async ValueTask InitializeAsync()
     {
@@ -49,10 +53,12 @@ public sealed class DatabaseFixture : IAsyncLifetime
                 // On here and in compose, off everywhere else: without stock there is no demo.
                 ["Inventory:SeedStock"] = "true",
             });
+        _orders = new ServiceFactory<Orders.Api.ApiMarker>(ConnectionStringFor("orders"));
 
         await WaitUntilStarted(_shipping.CreateClient());
         await WaitUntilStarted(_payments.CreateClient());
         await WaitUntilStarted(_inventory.CreateClient());
+        await WaitUntilStarted(_orders.CreateClient());
     }
 
     public async ValueTask DisposeAsync()
@@ -70,6 +76,11 @@ public sealed class DatabaseFixture : IAsyncLifetime
         if (_inventory is not null)
         {
             await _inventory.DisposeAsync();
+        }
+
+        if (_orders is not null)
+        {
+            await _orders.DisposeAsync();
         }
 
         await _postgres.DisposeAsync();
