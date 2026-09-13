@@ -1,3 +1,4 @@
+using System.Globalization;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -14,18 +15,32 @@ public sealed class DatabaseFixture : IAsyncLifetime
     // Same image as docker-compose.yml, so the tests exercise the engine the demo runs on.
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Fixed here so the decline path is reproducible instead of depending on configuration.</summary>
+    public const decimal PaymentDeclineThreshold = 100m;
+
     private ServiceFactory<Shipping.Api.ApiMarker>? _shipping;
+    private ServiceFactory<Payments.Api.ApiMarker>? _payments;
 
     public ServiceFactory<Shipping.Api.ApiMarker> Shipping =>
         _shipping ?? throw new InvalidOperationException("The fixture has not been initialised.");
+
+    public ServiceFactory<Payments.Api.ApiMarker> Payments =>
+        _payments ?? throw new InvalidOperationException("The fixture has not been initialised.");
 
     public async ValueTask InitializeAsync()
     {
         await _postgres.StartAsync();
 
         _shipping = new ServiceFactory<Shipping.Api.ApiMarker>(ConnectionStringFor("shipping"));
+        _payments = new ServiceFactory<Payments.Api.ApiMarker>(
+            ConnectionStringFor("payments"),
+            new Dictionary<string, string?>(StringComparer.Ordinal)
+            {
+                ["Payments:DeclineAboveAmount"] = PaymentDeclineThreshold.ToString(CultureInfo.InvariantCulture),
+            });
 
         await WaitUntilStarted(_shipping.CreateClient());
+        await WaitUntilStarted(_payments.CreateClient());
     }
 
     public async ValueTask DisposeAsync()
@@ -33,6 +48,11 @@ public sealed class DatabaseFixture : IAsyncLifetime
         if (_shipping is not null)
         {
             await _shipping.DisposeAsync();
+        }
+
+        if (_payments is not null)
+        {
+            await _payments.DisposeAsync();
         }
 
         await _postgres.DisposeAsync();
