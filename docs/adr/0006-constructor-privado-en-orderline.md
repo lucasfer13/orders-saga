@@ -2,7 +2,12 @@
 
 ## Estado
 
-Aceptada · Reemplaza a [0003](./0003-mapeo-del-agregado-order.md)
+Aceptada · Reemplaza a [0003](./0003-mapeo-del-agregado-order.md) ·
+Reemplazada por [0007](./0007-money-como-clase-para-ownsone.md) en el
+mecanismo de mapeo de `Money` dentro de `OrderLine` (pasa de propiedad
+compleja a `OwnsOne` sobre `Money` como clase). El constructor privado sin
+parámetros de `OrderLine` decidido aquí sigue vigente sin cambios: el 0007
+lo da por hecho y no lo sustituye.
 
 ## Contexto
 
