@@ -77,3 +77,11 @@ csharp_space_between_method_call_parameter_list_parentheses = false
 [*.{cs,vb}]
 dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
 dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+
+# --- Migraciones de EF Core ---
+# Las emite `dotnet ef`, con namespace entre llaves y sin las preferencias de
+# estilo del repo. Reformatearlas a mano sería un paso manual cada vez que se
+# genera una migración, y este repo trata eso como un bug.
+[**/Persistence/Migrations/*.cs]
+generated_code = true
+dotnet_diagnostic.IDE0161.severity = none
