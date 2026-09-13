@@ -17,32 +17,37 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         // Not persistent state: a list of events accumulated to publish, see ADR-0003.
         builder.Ignore(order => order.DomainEvents);
 
-        // Two consultable columns, not a single "12.50 EUR" column (ADR-0003).
+        // Two consultable columns, not a single "12.50 EUR" column (ADR-0003). Money is
+        // now a reference type, so the complex property itself needs an explicit
+        // IsRequired() — EF no longer gets that for free the way it did from a struct
+        // (ADR-0007).
         builder.ComplexProperty(order => order.Total, total =>
         {
+            total.IsRequired();
             total.Property(money => money.Amount).HasColumnName("total_amount").HasPrecision(18, 2);
             total.Property(money => money.Currency).HasColumnName("total_currency").IsRequired().HasMaxLength(3).IsFixedLength();
         });
 
-        // Lines is deliberately NOT mapped yet. ADR-0006 authorised a private
-        // parameterless constructor on OrderLine to unblock materialization, but that
-        // only solves construction — OwnedNavigationBuilder (the OwnsMany builder)
-        // exposes no ComplexProperty, so Money (UnitPrice) cannot be declared as a
-        // nested complex type from the fluent API. The two ways around that were both
-        // tried and both fail:
-        //   - Reaching the underlying mutable metadata directly (IMutableTypeBase.
-        //     AddComplexProperty) does let the model build and script a migration, but
-        //     EF's own snapshot code generator then emits `b1.ComplexProperty(...)` for
-        //     it in the checked-in Designer/ModelSnapshot files — a call that does not
-        //     exist on OwnedNavigationBuilder either, so the generated code fails to
-        //     compile. Not a workaround: a dead end.
-        //   - OwnsMany(...).ToJson() (ADR-0003's candidate #1) now builds cleanly with
-        //     the private constructor in place — untested at ADR-0006 time — but it
-        //     serializes the whole collection into one jsonb column, which is exactly
-        //     the SQL-queryability loss ADR-0003 rejected it for. Adopting it here would
-        //     silently reopen an accepted ADR, which is not this implementer's call.
-        // Left unmapped rather than shipped broken or silently reopening the ADR — see
-        // the implementation report for the two remaining candidates.
-        builder.Ignore(order => order.Lines);
+        // Own collection in its own table, mapped by the backing field _lines, with the
+        // default shadow key (order + line index), not a business key (ADR-0003).
+        builder.OwnsMany(order => order.Lines, lines =>
+        {
+            lines.ToTable("order_lines");
+            lines.UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            lines.Property(line => line.ProductId).IsRequired();
+            lines.Property(line => line.Quantity).IsRequired();
+
+            // OwnsOne, not ComplexProperty: OwnedNavigationBuilder does not expose it. Only
+            // reachable now that Money is a class, satisfying OwnsOne's `where
+            // TNewRelatedEntity : class` constraint (ADR-0007). Unlike ComplexPropertyBuilder
+            // above, OwnedNavigationBuilder exposes no IsRequired() for the owned reference
+            // itself — EF infers it from the non-nullable Money CLR type instead.
+            lines.OwnsOne(line => line.UnitPrice, unitPrice =>
+            {
+                unitPrice.Property(money => money.Amount).HasColumnName("unit_price_amount").HasPrecision(18, 2);
+                unitPrice.Property(money => money.Currency).HasColumnName("unit_price_currency").IsRequired().HasMaxLength(3).IsFixedLength();
+            });
+        });
     }
 }

@@ -29,7 +29,9 @@ public sealed class Order
 
     public OrderStatus Status { get; private set; }
 
-    public Money Total { get; private set; }
+    // Money is a reference type (ADR-0007); EF sets this via the backing field, the
+    // null-forgiving default only satisfies the compiler between construction and that.
+    public Money Total { get; private set; } = null!;
 
     public IReadOnlyCollection<OrderLine> Lines => _lines.AsReadOnly();
 

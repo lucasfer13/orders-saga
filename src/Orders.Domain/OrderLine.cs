@@ -22,7 +22,9 @@ public sealed record OrderLine
 
     public int Quantity { get; }
 
-    public Money UnitPrice { get; }
+    // Money is a reference type (ADR-0007); EF sets this via the backing field, the
+    // null-forgiving default only satisfies the compiler between construction and that.
+    public Money UnitPrice { get; } = null!;
 
     public Money LineTotal => UnitPrice * Quantity;
 }

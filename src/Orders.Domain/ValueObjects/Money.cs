@@ -1,6 +1,8 @@
 namespace Orders.Domain;
 
-public readonly record struct Money
+// A class, not a struct: OwnsOne/OwnsMany require a reference type (ADR-0007). Still
+// immutable and equal by value, same as before — only the CLR representation changed.
+public sealed record Money
 {
     public decimal Amount { get; }
     public string Currency { get; }
