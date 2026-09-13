@@ -72,10 +72,10 @@ public class OrdersHealthEndpointTests(WebApplicationFactory<Orders.Api.ApiMarke
     protected override HttpClient CreateClient() => factory.CreateClient();
 }
 
-public class InventoryHealthEndpointTests(WebApplicationFactory<Inventory.Api.ApiMarker> factory)
-    : HealthEndpointTests, IClassFixture<WebApplicationFactory<Inventory.Api.ApiMarker>>
+[Collection(SharedDatabase.Name)]
+public class InventoryHealthEndpointTests(DatabaseFixture fixture) : PersistedServiceHealthEndpointTests
 {
-    protected override HttpClient CreateClient() => factory.CreateClient();
+    protected override HttpClient CreateClient() => fixture.Inventory.CreateClient();
 }
 
 [Collection(SharedDatabase.Name)]
