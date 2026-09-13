@@ -98,6 +98,9 @@ services:
     container_name: orders-saga-payments
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      # Environment variables outrank appsettings.Development.json, so this wins
+      # over the localhost default the repo versions for `dotnet run`.
+      ConnectionStrings__Database: "Host=postgres;Port=5432;Database=payments;Username=orders_saga;Password=orders_saga_dev_only;Timeout=3"
     ports:
       - "8082:8080"
     depends_on:

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Payments.Api.Persistence;
 
 namespace Payments.Api.HealthChecks;
 
@@ -8,11 +9,28 @@ internal static class HealthCheckExtensions
     private const string Live = "live";
     private const string Ready = "ready";
     private const string Startup = "startup";
+    private const string Postgres = "postgres";
 
     public static IServiceCollection AddServiceHealthChecks(this IServiceCollection services)
     {
         services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), tags: [Live], timeout: TimeSpan.FromSeconds(1));
+            .AddCheck("self", () => HealthCheckResult.Healthy(), tags: [Live], timeout: TimeSpan.FromSeconds(1))
+            // Probes through the very DbContext the service uses: passing means the
+            // application can work, not just that a socket opened.
+            .AddDbContextCheck<PaymentsDbContext>(Postgres, tags: [Ready])
+            // Also in ready, not only startup: a reachable database with no schema
+            // cannot serve traffic, and compose watches /health/ready.
+            .AddCheck<MigrationsHealthCheck>("migrations", tags: [Ready, Startup], timeout: TimeSpan.FromSeconds(1));
+
+        // AddDbContextCheck takes no timeout, and the compose healthcheck gives the
+        // whole ready probe 3s. Checks run in parallel, so 2s leaves margin.
+        services.Configure<HealthCheckServiceOptions>(options =>
+        {
+            foreach (var registration in options.Registrations.Where(registration => registration.Name == Postgres))
+            {
+                registration.Timeout = TimeSpan.FromSeconds(2);
+            }
+        });
 
         return services;
     }
