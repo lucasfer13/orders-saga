@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrdersSaga.IntegrationTests.Infrastructure;
+using Payments.Api;
 using Payments.Api.Features.ChargePayment;
 using Payments.Api.Features.RefundPayment;
 using Payments.Api.Persistence;
@@ -27,6 +29,57 @@ public class PaymentsPersistenceTests(DatabaseFixture fixture)
         stored.Amount.ShouldBe(50m);
         stored.Currency.ShouldBe("EUR");
         stored.Refunded.ShouldBeFalse();
+    }
+
+    /// <summary>
+    /// Behaviour carried over from the in-memory PaymentStore, now made explicit with a
+    /// test: a second charge on the same order overwrites the first one in place instead
+    /// of being rejected, and it clears any prior refund since the new charge was never
+    /// refunded.
+    /// </summary>
+    [Fact]
+    public async Task Charging_an_order_twice_overwrites_the_amount_currency_and_clears_the_refund_state()
+    {
+        var orderId = Guid.NewGuid();
+
+        var first = await Handle<ChargePaymentHandler, ChargePaymentResult>(
+            handler => handler.HandleAsync(new ChargePaymentCommand(orderId, 50m, "EUR"), TestContext.Current.CancellationToken));
+        await Handle<RefundPaymentHandler, RefundPaymentResult>(
+            handler => handler.HandleAsync(new RefundPaymentCommand(orderId), TestContext.Current.CancellationToken));
+
+        var second = await Handle<ChargePaymentHandler, ChargePaymentResult>(
+            handler => handler.HandleAsync(new ChargePaymentCommand(orderId, 75m, "USD"), TestContext.Current.CancellationToken));
+
+        second.Succeeded.ShouldBeTrue();
+        second.ChargeId.ShouldBe(first.ChargeId);
+
+        var stored = await Read(orderId);
+        stored.ShouldNotBeNull();
+        stored.Amount.ShouldBe(75m);
+        stored.Currency.ShouldBe("USD");
+        stored.Refunded.ShouldBeFalse();
+    }
+
+    /// <summary>
+    /// Restores a scenario the deleted unit tests covered: with no threshold configured,
+    /// declining never triggers. Built with the shared fixture's own DbContext and a
+    /// handler instance with different options, rather than a second host, so it still
+    /// runs against the same real database and does not spin up another container.
+    /// </summary>
+    [Fact]
+    public async Task Charging_succeeds_when_no_threshold_is_configured()
+    {
+        var orderId = Guid.NewGuid();
+
+        await using var scope = fixture.Payments.Services.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<PaymentsDbContext>();
+        var handler = new ChargePaymentHandler(context, Options.Create(new PaymentsOptions { DeclineAboveAmount = null }));
+
+        var result = await handler.HandleAsync(
+            new ChargePaymentCommand(orderId, 10_000m, "EUR"), TestContext.Current.CancellationToken);
+
+        result.Succeeded.ShouldBeTrue();
+        (await Read(orderId)).ShouldNotBeNull();
     }
 
     [Fact]
