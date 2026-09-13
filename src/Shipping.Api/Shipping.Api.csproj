@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="OrdersSaga.UnitTests" />
+    <InternalsVisibleTo Include="OrdersSaga.IntegrationTests" />
   </ItemGroup>
 
 </Project>

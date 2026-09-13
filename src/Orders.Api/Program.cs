@@ -1,6 +1,11 @@
+using Orders.Api.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddServiceHealthChecks();
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapHealthCheckEndpoints();
 
 app.Run();

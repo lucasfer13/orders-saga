@@ -47,8 +47,6 @@ services:
       timeout: 5s
       retries: 10
 
-  # The four services below have no healthcheck yet: they expose no health
-  # endpoint to point one at. Added alongside /health/ready.
   orders:
     build:
       context: .
@@ -63,6 +61,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    healthcheck:
+      # BusyBox wget ships with the Alpine base image, so this needs nothing extra.
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   inventory:
     build:
@@ -78,6 +83,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    healthcheck:
+      # BusyBox wget ships with the Alpine base image, so this needs nothing extra.
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   payments:
     build:
@@ -93,6 +105,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    healthcheck:
+      # BusyBox wget ships with the Alpine base image, so this needs nothing extra.
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   shipping:
     build:
@@ -108,6 +127,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    healthcheck:
+      # BusyBox wget ships with the Alpine base image, so this needs nothing extra.
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
 volumes:
   postgres_data:
